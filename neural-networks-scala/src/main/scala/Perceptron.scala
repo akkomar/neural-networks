@@ -1,3 +1,9 @@
+/**
+  * Simple artificial neuron
+  * It takes several binary inputs and produces single binary output. Output is computed using weights and predefined
+  * bias. If the dot product of inpus and weights plus the bias is greater than zero, then perceptron outputs
+  * positive value. Bias decides how easy is to get perceptron to fire (very negative one == difficult to fire)
+  */
 class Perceptron(bias: Double, weights: Seq[Double]) {
   def evaluate(inputs: Seq[Int]): Int = {
     val weightedSum = inputs.zipAll(weights, 0, 0.0).map { case (input, weight) => input * weight }.sum
@@ -49,8 +55,8 @@ object BitAddingNetwork {
 }
 
 object BitAddingNetworkTest extends App {
-  assert(BitAddingNetwork.evaluate(0, 0) ==(0, 0))
-  assert(BitAddingNetwork.evaluate(0, 1) ==(1, 0))
-  assert(BitAddingNetwork.evaluate(1, 0) ==(1, 0))
-  assert(BitAddingNetwork.evaluate(1, 1) ==(0, 1))
+  assert(BitAddingNetwork.evaluate(0, 0) == (0, 0))
+  assert(BitAddingNetwork.evaluate(0, 1) == (1, 0))
+  assert(BitAddingNetwork.evaluate(1, 0) == (1, 0))
+  assert(BitAddingNetwork.evaluate(1, 1) == (0, 1))
 }
