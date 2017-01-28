@@ -1,3 +1,7 @@
+## Book repos
+* https://github.com/mnielsen/neural-networks-and-deep-learning
+* Python3: https://github.com/MichalDanielDobrzanski/DeepLearningPython35
+
 ## Artificial neurons
 ### Perceptron
 Code: [Perceptron.scala](neural-networks-scala/src/main/scala/Perceptron.scala)
