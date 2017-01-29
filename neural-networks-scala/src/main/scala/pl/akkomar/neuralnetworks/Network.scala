@@ -1,7 +1,9 @@
 package pl.akkomar.neuralnetworks
 
-import breeze.linalg.DenseMatrix
+import breeze.linalg.{DenseMatrix, DenseVector}
 import breeze.numerics._
+
+import scala.collection.mutable
 
 /**
   * Neural network representation
@@ -26,7 +28,7 @@ class Network(sizes: Array[Int]) {
     DenseMatrix.rand(x, y, normal01)
   }
 
-  def feedForward(input: DenseMatrix[Double]): DenseMatrix[Double] = {
+  def feedForward(input: DenseVector[Double]): DenseVector[Double] = {
     var a = input
     biases.zip(weights).foreach { case (b, w) =>
       a = sigmoid((w * a) + b)
@@ -35,9 +37,82 @@ class Network(sizes: Array[Int]) {
   }
 
   /**
+    * Returns a tuple (`nablaB`, `nablaW`) representing the gradient for the cost function.
+    * `nablaB` and `nablaW` are layer-by-layer arrays of dense matrices similar to `biases` and `weights`
+    * @param x
+    * @param y
+    * @return
+    */
+  private def backProp(x: DenseVector[Double], y: DenseVector[Double]):(Array[DenseMatrix[Double]],Array[DenseMatrix[Double]]) = {
+    val nablaB: Array[DenseMatrix[Double]] = biases.map(b => DenseMatrix.zeros[Double](b.rows, b.cols))
+    val nablaW: Array[DenseMatrix[Double]] = weights.map(w => DenseMatrix.zeros[Double](w.rows, w.cols))
+
+    var activation = x
+
+    //all activations, layer by layer
+    val activations = new mutable.MutableList[DenseVector[Double]]()+=x
+
+    //all z vectors, layer by layer
+    val zs = new mutable.MutableList[DenseVector[Double]]()
+
+    biases.zip(weights).foreach{case (b,w)=>
+        val z:DenseVector[Double] = (w * activation)+b
+        zs+=z
+        activation = sigmoid(z)
+        activations+=activation
+    }
+
+    //backward pass
+
+    ???
+  }
+
+  /**
+    * Updates the network weights and biases according to single iteration of gradient descent using backpropagation
+    * to a single miniBatch of training data
+    *
+    * @param miniBatch
+    * @param eta learning rate
+    */
+  private def updateMiniBatch(miniBatch: Array[TrainingExample], eta: Double): Unit = {
+    val nablaB: Array[DenseMatrix[Double]] = biases.map(b => DenseMatrix.zeros[Double](b.rows, b.cols))
+    val nablaW: Array[DenseMatrix[Double]] = weights.map(w => DenseMatrix.zeros[Double](w.rows, w.cols))
+    miniBatch.foreach { case TrainingExample(x, y) =>
+      val (deltaNablaB, deltaNablaW) = backProp(x, y)
+      nablaB.indices.foreach{ n=>
+        nablaB(n):+=deltaNablaB(n)
+      }
+      nablaW.indices.foreach{ n=>
+        nablaW(n):+=deltaNablaW(n)
+      }
+    }
+    //update weights
+    weights.indices.foreach{n=>
+      weights(n):-=(nablaW(n):*=(eta/miniBatch.length.toDouble))
+    }
+    //update biases
+    biases.indices.foreach{n=>
+      biases(n):-=(nablaB(n):*=(eta/miniBatch.length.toDouble))
+    }
+  }
+
+  /**
     * Train network using mini-batch stochastic gradient descent
     */
-  def sgd(): Unit = {
+  def sgd(trainingData: Array[TrainingExample], epochs: Int, miniBatchSize: Int, eta: Double): Unit = {
+
+    val n = trainingData.size
+
+    (0 until n) foreach { j =>
+      import breeze.linalg.shuffle
+      shuffle(trainingData)
+      val miniBatches = trainingData.grouped(miniBatchSize)
+      miniBatches.foreach { miniBatch =>
+        updateMiniBatch(miniBatch, eta)
+      }
+
+      print(s"Epoch $j complete")
+    }
 
   }
 
@@ -49,6 +124,7 @@ class Network(sizes: Array[Int]) {
   }
 }
 
+case class TrainingExample(input: DenseVector[Double], output: DenseVector[Double])
 
 object NetworkTest extends App {
 
