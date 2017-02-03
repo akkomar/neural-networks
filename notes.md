@@ -9,6 +9,7 @@ Code: [Perceptron.scala](neural-networks-scala/src/main/scala/Perceptron.scala)
 Code: [SigmoidNeuron.scala](neural-networks-scala/src/main/scala/SigmoidNeuron.scala)
 
 ## Neural Network
+Scala implementation: Code: [Network.scala](neural-networks-scala/src/main/scala/pl/akkomar/neuralnetworks/Network.scala)
 ## Learning with gradient descent
 * Stochastic Gradient Descent:
   * standard learning algorithm for neural networks
